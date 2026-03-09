@@ -1,0 +1,94 @@
+{
+  "experiment": "VeriForgot: Verifiable Machine Unlearning for GDPR Compliance",
+  "paper": "CRBL 2026",
+  "dataset": "CIFAR-10",
+  "model": "ResNet-18",
+  "hardware": "NVIDIA Tesla T4 (Kaggle)",
+  "seed": 42,
+  "dataset_config": {
+    "forget_classes": [0, 1],
+    "forget_size": 500,
+    "retain_size": 49500,
+    "non_member_classes": "2-9",
+    "non_member_size": 500
+  },
+  "baseline": {
+    "test_accuracy": 85.81,
+    "forget_accuracy": 97.00,
+    "retain_accuracy": 92.72,
+    "mia_auc": 0.5918,
+    "member_avg_confidence": 0.9398,
+    "nonmember_avg_confidence": 0.8356,
+    "confidence_gap": 0.1042,
+    "loss_gap": 0.2804
+  },
+  "mia_results": {
+    "Original": {
+      "auc_conf": 0.5918,
+      "auc_loss": 0.5918,
+      "mia_rate": 6.2,
+      "conf_gap": 0.1042,
+      "loss_gap": 0.2804,
+      "forget_acc": 97.00,
+      "retain_acc": 92.72,
+      "test_acc": 85.81,
+      "oracle_verdict": "FAIL"
+    },
+    "Gradient Ascent": {
+      "auc_conf": 0.5272,
+      "auc_loss": 0.5272,
+      "mia_rate": 2.2,
+      "conf_gap": 0.0822,
+      "loss_gap": 0.2436,
+      "delta_auc": -0.0646,
+      "pct_toward_random": 70.4,
+      "forget_acc": 94.60,
+      "retain_acc": 92.01,
+      "test_acc": 85.78,
+      "test_acc_drop": 0.03,
+      "oracle_verdict": "PASS"
+    },
+    "Selective Retrain": {
+      "auc_conf": 0.5604,
+      "auc_loss": 0.5604,
+      "mia_rate": 6.6,
+      "conf_gap": 0.0617,
+      "loss_gap": 0.1360,
+      "delta_auc": -0.0314,
+      "pct_toward_random": 34.2,
+      "forget_acc": 88.40,
+      "retain_acc": 88.51,
+      "test_acc": 85.15,
+      "test_acc_drop": 0.66,
+      "oracle_verdict": "PASS"
+    },
+    "Strong GA": {
+      "auc_conf": 0.4669,
+      "auc_loss": 0.4669,
+      "mia_rate": 0.0,
+      "conf_gap": 0.0885,
+      "loss_gap": 0.1686,
+      "delta_auc": -0.1249,
+      "pct_toward_random": 136.1,
+      "forget_acc": 96.20,
+      "retain_acc": 92.05,
+      "oracle_verdict": "PASS"
+    }
+  },
+  "oracle": {
+    "threshold_tau": 0.57,
+    "threshold_tau_strict": 0.58,
+    "n_genuine": 10,
+    "n_fake": 10,
+    "true_positives": 10,
+    "true_negatives": 9,
+    "false_positives": 1,
+    "false_negatives": 0,
+    "tpr": 100.0,
+    "tnr": 90.0,
+    "overall_accuracy": 95.0,
+    "accuracy_at_tau_058": 100.0,
+    "genuine_aucs": [0.0029, 0.0046, 0.0025, 0.0013, 0.0048, 0.0494, 0.2670, 0.2930, 0.3230, 0.3520],
+    "fake_aucs": [0.5891, 0.5910, 0.5916, 0.5990, 0.5909, 0.5960, 0.5966, 0.5660, 0.5881, 0.5816]
+  }
+}
