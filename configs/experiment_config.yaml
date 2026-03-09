@@ -1,0 +1,80 @@
+# VeriForgot Experiment Configuration
+# Fully reproducible settings for all experiments
+
+project:
+  name: VeriForgot
+  version: "1.0.0"
+  paper: "CRBL 2026"
+
+seed: 42
+device: "cuda"  # falls back to cpu automatically
+
+dataset:
+  name: CIFAR-10
+  root: "./data"
+  num_classes: 10
+  forget_classes: [0, 1]      # airplane, automobile
+  forget_size: 500
+  non_member_classes: [2,3,4,5,6,7,8,9]
+  non_member_size: 500
+
+model:
+  architecture: resnet18
+  pretrained: false
+  num_classes: 10
+  feature_dim: 512
+
+training:
+  epochs: 30
+  batch_size: 128
+  optimizer: sgd
+  learning_rate: 0.1
+  momentum: 0.9
+  weight_decay: 0.0005
+  scheduler: cosine_annealing
+
+unlearning:
+  gradient_ascent:
+    epochs: 10
+    learning_rate: 0.0005
+    momentum: 0.9
+    batch_size: 64
+    interleave_retain: true
+
+  selective_retrain:
+    epochs: 25
+    learning_rate: 0.1
+    momentum: 0.9
+    weight_decay: 0.0005
+    scheduler: cosine_annealing
+
+  strong_ga:
+    ascent_epochs: 25
+    ascent_lr: 0.01
+    ascent_momentum: 0.9
+    grad_clip_max_norm: 1.0
+    finetune_epochs: 5
+    finetune_lr: 0.001
+    batch_size: 64
+
+oracle:
+  threshold_tau: 0.57
+  threshold_tau_strict: 0.58
+  n_genuine_trials: 10
+  n_fake_trials: 10
+  fake_noise_min: 0.0005
+  fake_noise_max: 0.0032
+
+blockchain:
+  hash_algorithm: sha3_256
+  zk_construction: groth16
+  min_param_shift_delta: 0.01
+
+paths:
+  model_original: "checkpoints/model_original.pth"
+  model_ga: "checkpoints/model_ga.pth"
+  model_sr: "checkpoints/model_kd.pth"
+  model_sga: "checkpoints/model_ga2.pth"
+  forget_indices: "checkpoints/forget_indices.pkl"
+  retain_indices: "checkpoints/retain_indices.pkl"
+  results: "results/all_results.json"
