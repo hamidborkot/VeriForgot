@@ -1,0 +1,24 @@
+{
+  "experiments": [
+    {
+      "dataset": "CIFAR-100", "model": "ResNet-18",
+      "seeds": [
+        {"seed": 42,  "orig_auc": 0.7694, "ga_auc": 0.4913, "ucs": 1.034, "pass": true},
+        {"seed": 123, "orig_auc": 0.7521, "ga_auc": 0.4847, "ucs": 1.042, "pass": true},
+        {"seed": 999, "orig_auc": 0.7608, "ga_auc": 0.4978, "ucs": 0.998, "pass": true}
+      ],
+      "oracle_tnr_intentional": 100.0,
+      "soundness_p_false_pass": 0.000
+    },
+    {
+      "dataset": "SVHN", "model": "ResNet-18",
+      "seeds": [
+        {"seed": 42,  "orig_auc": 0.6509, "ga_auc": 0.4227, "ucs": 1.513, "pass": true},
+        {"seed": 123, "orig_auc": 0.6341, "ga_auc": 0.4388, "ucs": 1.462, "pass": true},
+        {"seed": 999, "orig_auc": 0.6288, "ga_auc": 0.4512, "ucs": 1.368, "pass": true}
+      ],
+      "oracle_tnr_intentional": 100.0,
+      "soundness_p_false_pass": 6.97
+    }
+  ]
+}

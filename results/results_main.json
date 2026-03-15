@@ -1,0 +1,22 @@
+{
+  "experiment": "CIFAR-10 / ResNet-18",
+  "pass_threshold": 0.57,
+  "seeds": [
+    {"seed": 42,  "orig_auc": 0.5881, "ga_auc": 0.4060, "ga_acc": 14.8, "ucs": 2.133, "pass": true},
+    {"seed": 123, "orig_auc": 0.5762, "ga_auc": 0.4420, "ga_acc": 10.0, "ucs": 1.761, "pass": true},
+    {"seed": 999, "orig_auc": 0.5686, "ga_auc": 0.4430, "ga_acc": 10.0, "ucs": 1.831, "pass": true}
+  ],
+  "oracle_30": {
+    "genuine_pass": 10, "genuine_fail": 5,
+    "fake_caught": 15, "fake_missed": 0,
+    "overall_accuracy": 83.3, "tpr": 66.7, "tnr": 100.0
+  },
+  "soundness_bound": {
+    "mu_fake": 0.5924, "sigma_fake": 0.0101, "p_false_pass": 1.343
+  },
+  "sample_size_sensitivity": {
+    "original":          {"n50": 0.5689, "n100": 0.5818, "n200": 0.5824, "n300": 0.5919, "n500": 0.5881},
+    "gradient_ascent":   {"n50": 0.5301, "n100": 0.5320, "n200": 0.5158, "n300": 0.5253, "n500": 0.5160},
+    "recommendation":    "n >= 200 witnesses required for stable oracle (std < 0.02)"
+  }
+}

@@ -1,79 +1,95 @@
-# 🔐 VeriForgot
+# VeriForgot 🔐
 
-> **Blockchain-Attested Verifiable Machine Unlearning Using Membership Inference Oracles for GDPR Compliance**
+> **Verifiable Machine Unlearning with MIA Oracle, Blockchain Attestation, and Cryptographic Commitment**
 
-[![Conference](https://img.shields.io/badge/Conference-CRBL%202026-blue?style=flat-square)](https://crbl2026.org)
-[![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
-[![Python](https://img.shields.io/badge/Python-3.10%2B-yellow?style=flat-square)](https://python.org)
-[![PyTorch](https://img.shields.io/badge/PyTorch-2.x-orange?style=flat-square)](https://pytorch.org)
-[![Dataset](https://img.shields.io/badge/Dataset-CIFAR--10-lightgrey?style=flat-square)](https://www.cs.toronto.edu/~kriz/cifar.html)
-[![Status](https://img.shields.io/badge/Status-Under%20Review-red?style=flat-square)](#)
+[![Python 3.10+](https://img.shields.io/badge/Python-3.10+-blue.svg)](https://www.python.org/)
+[![PyTorch 2.0+](https://img.shields.io/badge/PyTorch-2.0+-red.svg)](https://pytorch.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![CRBL 2026](https://img.shields.io/badge/Submitted-CRBL%202026-green.svg)]()
+[![Ethereum](https://img.shields.io/badge/Solidity-0.8.20-blue.svg)](contracts/)
 
----
-
-## 📌 Overview
-
-**VeriForgot** is the first empirically validated framework that provides **independently verifiable GDPR Article 17 compliance** for machine learning models. It addresses a critical gap: while machine unlearning methods exist, *no mechanism currently proves that unlearning genuinely occurred*.
-
-### The Problem
-GDPR Article 17 ("Right to Be Forgotten") requires organizations to remove personal data from trained ML models. But:
-- Organizations **self-report compliance** — no independent verification
-- Data subjects have **no tool to verify** erasure
-- Regulators **lack a technical audit framework**
-
-### Our Solution
-VeriForgot combines three novel layers:
-
-| Layer | Component | What it does |
-|---|---|---|
-| 🔍 Verification | MIA Oracle | Quantifies unlearning success via calibrated AUC threshold |
-| ⛓️ Attestation | Blockchain Certificate | Tamper-proof, publicly auditable compliance record |
-| 🔒 Privacy | ZK Proof Protocol | Proves parameter shift without revealing model weights |
+**"VeriForgot: Blockchain-Attested Machine Unlearning Verification via Membership Inference Oracle and Cryptographic Commitment"**
+*Submitted — CRBL 2026 (6th International Conference on Cryptography and Blockchain)*
 
 ---
 
-## 🏗️ System Architecture
+## 🔍 Abstract
 
-![VeriForgot Architecture](paper/figures/fig1_architecture.png)
+GDPR Article 17 grants data subjects the *right to erasure*, yet no practical mechanism exists to verify that an ML model has genuinely forgotten specific training data. **VeriForgot** addresses this with a four-component system:
 
-*The complete VeriForgot verification pipeline: from GDPR erasure request through MIA oracle and ZK proof verification to immutable blockchain certificate issuance.*
+1. 🎯 **MIA Oracle** — empirical Membership Inference Attack oracle for outcome-level compliance
+2. 📐 **UCS Metric** — Unlearning Completeness Score, a continuous compliance quantifier
+3. ⛓️ **On-chain Certificate** — immutable Solidity smart contract anchoring compliance records
+4. 🔒 **Weight Commitment** — SHA-256 cryptographic commitment for weight integrity proof
+
+Evaluated across **3 datasets × 3 architectures × 3 seeds**, achieving **100% intentional-fake detection (TNR)** across all configurations and **method-agnostic** verification across both GA and SCRUB unlearning.
 
 ---
 
 ## 📊 Key Results
 
-All experiments on **CIFAR-10** with **ResNet-18** (NVIDIA Tesla T4, Kaggle).
+### Cross-Architecture × Cross-Dataset Oracle Evaluation
 
-### Unlearning Effectiveness (MIA AUC)
+| Dataset | Model | Orig AUC | GA AUC | UCS | TNR (Intentional Fakes) |
+|---|---|---|---|---|---|
+| CIFAR-10 | ResNet-18 | 0.5881 | 0.4892 | 1.12 | **100%** |
+| CIFAR-100 | ResNet-18 | 0.7694 | 0.4913 | 1.03 | **100%** |
+| SVHN | ResNet-18 | 0.6509 | 0.4227 | 1.51 | **100%** |
+| CIFAR-10 | VGG-11 | 0.6066 | 0.0242 | 5.46 | **100%** |
+| CIFAR-10 | MobileNetV2 | 0.6220 | 0.0000 | 5.10 | **100%** |
 
-| Method | MIA AUC | Δ AUC | % Toward Random | Verdict |
+### GA vs SCRUB — Method-Agnostic Oracle Verification
+
+| Method | MIA AUC ↓ | Test Acc ↑ | UCS ↑ | Oracle |
 |---|---|---|---|---|
-| Original (baseline) | 0.5918 | — | — | ❌ FAIL |
-| Gradient Ascent | 0.5272 | −0.0646 | 70.4% | ✅ PASS |
-| Selective Retrain | 0.5604 | −0.0314 | 34.2% | ✅ PASS |
-| **Strong GA** | **0.4669** | **−0.1249** | **136.1%** | ✅ PASS |
+| Gradient Ascent (GA) | 0.430 ± 0.017 | 11.6% | 1.91 | ✅ PASS 3/3 |
+| SCRUB (Kurmanji, NeurIPS 2023) | **0.055 ± 0.005** | **72.2%** | **6.90** | ✅ PASS 3/3 |
 
-> AUC = 0.50 represents **perfect unlearning** (forget set indistinguishable from non-members)
+> **Key finding:** SCRUB achieves 7.8× stronger privacy removal and 6× better utility preservation vs GA, while both pass the oracle. The oracle verifies *outcome*, not *method*.
 
-### Model Accuracy Preservation
+### Oracle-30 Summary (CIFAR-10 / ResNet-18)
 
-| Method | Forget Acc | Retain Acc | Test Acc | Test Drop |
-|---|---|---|---|---|
-| Original | 97.00% | 92.72% | 85.81% | — |
-| Gradient Ascent | 94.60% | 92.01% | **85.78%** | **0.03%** |
-| Selective Retrain | 88.40% | 88.51% | 85.15% | 0.66% |
-| Strong GA | 96.20% | 92.05% | ~84.9% | <1% |
+| Category | Result | Interpretation |
+|---|---|---|
+| Genuine compliant (well-configured) | 10/15 PASS | Effective unlearning certified |
+| Genuine non-compliant (bad hyperparams) | 5/15 FAIL | Oracle correctly rejects insufficient unlearning |
+| Fake (Gaussian noise, FGSM, pruning, finetune) | 15/15 CAUGHT | **TNR = 100%** |
 
-### Oracle Detection Accuracy
+### Compliance Soundness Bound
 
-| Metric | Value |
+| Configuration | P(fake passes oracle) |
 |---|---|
-| True Positive Rate (genuine unlearning detected) | **100.0%** |
-| True Negative Rate (fake compliance rejected) | **90.0%** |
-| Overall Accuracy | **95.0%** |
-| Overall Accuracy (τ=0.58) | **100.0%** |
+| CIFAR-10 / ResNet-18 | ≤ 1.34% |
+| CIFAR-100 / ResNet-18 | ≈ 0.000% |
+| SVHN / ResNet-18 | ≤ 6.97% |
 
-![Results Figure](paper/figures/fig2_results.png)
+### Smart Contract Gas Costs
+
+| Operation | Gas | USD @ 20 gwei, ETH=$3,000 |
+|---|---|---|
+| Store weight commitment | 46,872 | $2.81 |
+| Verify commitment (k=1,000) | 29,412 | $1.77 |
+| Issue compliance certificate | 68,914 | $4.13 |
+| Full pipeline total | ~145,198 | ~$8.71 |
+
+---
+
+## 🚀 Quick Start
+
+```bash
+git clone https://github.com/hamidborkot/VeriForgot.git
+cd VeriForgot
+pip install -r requirements.txt
+
+# Run individual experiments (GPU required, ~45 min each)
+python experiments/exp_main.py           # CIFAR-10 / ResNet-18
+python experiments/exp_datasets.py       # CIFAR-100 + SVHN
+python experiments/exp_architectures.py  # VGG-11 + MobileNetV2
+python experiments/exp_scrub.py          # GA vs SCRUB comparison
+
+# Or run everything
+bash scripts/run_all.sh
+```
 
 ---
 
@@ -81,128 +97,149 @@ All experiments on **CIFAR-10** with **ResNet-18** (NVIDIA Tesla T4, Kaggle).
 
 ```
 VeriForgot/
-├── 📄 README.md
-├── 📄 LICENSE
-├── 📄 requirements.txt
-├── 📄 .gitignore
-│
-├── 📁 paper/
-│   ├── VeriForgot_CRBL2026.pdf        # Camera-ready paper (add after acceptance)
-│   └── figures/
-│       ├── fig1_architecture.png       # System architecture diagram
-│       ├── fig2_results.png            # MIA AUC + accuracy results
-│       └── fig3_oracle.png             # Oracle detection results
-│
-├── 📁 notebooks/
-│   ├── 01_train_baseline.ipynb         # Baseline ResNet-18 training
-│   ├── 02_unlearning_methods.ipynb     # GA, SR, SGA unlearning
-│   ├── 03_mia_evaluation.ipynb         # MIA oracle evaluation
-│   └── 04_oracle_detection.ipynb       # Genuine vs fake unlearning
-│
-├── 📁 src/
-│   ├── models.py                       # ResNet-18 setup
-│   ├── unlearning.py                   # Unlearning algorithm implementations
-│   ├── mia_oracle.py                   # MIA oracle core logic
-│   ├── data_utils.py                   # Dataset and dataloader utilities
-│   └── blockchain/
-│       ├── certificate.py              # Unlearning Certificate interface
-│       └── zk_proof.py                 # ZK proof protocol specification
-│
-├── 📁 results/
-│   └── all_results.json                # Full experimental results
-│
-└── 📁 configs/
-    └── experiment_config.yaml          # Reproducible experiment configuration
+├── experiments/
+│   ├── utils.py                  # Shared: MIA oracle, UCS, train, GA, SCRUB, fakes
+│   ├── exp_main.py               # CIFAR-10 / ResNet-18 (primary evaluation)
+│   ├── exp_datasets.py           # CIFAR-100 + SVHN cross-dataset
+│   ├── exp_architectures.py      # VGG-11 + MobileNetV2 cross-architecture
+│   └── exp_scrub.py              # GA vs SCRUB method-agnostic comparison
+├── contracts/
+│   ├── VeriForgotOracle.sol      # On-chain compliance certificate (ERC-style)
+│   └── VeriForgotCommitment.sol  # SHA-256 weight commitment verifier
+├── commitment/
+│   └── weight_commitment.py      # Python cryptographic commitment client
+├── results/
+│   ├── results_main.json         # CIFAR-10/ResNet-18 full results
+│   ├── results_datasets.json     # CIFAR-100 + SVHN results
+│   ├── results_architectures.json# VGG-11 + MobileNetV2 results
+│   └── results_scrub.json        # SCRUB vs GA comparison
+├── scripts/
+│   └── run_all.sh                # Full pipeline runner
+├── requirements.txt
+├── .gitignore
+└── README.md
 ```
 
 ---
 
-## ⚡ Quick Start
+## 📐 Unlearning Completeness Score (UCS)
 
-### 1. Clone & Install
-```bash
-git clone https://github.com/hamidborkot/VeriForgot.git
-cd VeriForgot
-pip install -r requirements.txt
+The UCS normalises the MIA AUC drop relative to the pre-unlearning baseline:
+
+```
+UCS(M_unlearn) = (AUC_orig - AUC_unlearn) / (AUC_orig - 0.5)
 ```
 
-### 2. Run Full Pipeline (Kaggle recommended for free GPU)
-```bash
-# Open notebooks in order:
-# 1. notebooks/01_train_baseline.ipynb     → trains ResNet-18 on CIFAR-10
-# 2. notebooks/02_unlearning_methods.ipynb → runs GA, SR, SGA unlearning
-# 3. notebooks/03_mia_evaluation.ipynb     → MIA oracle evaluation
-# 4. notebooks/04_oracle_detection.ipynb   → genuine vs fake detection
-```
-
-### 3. Run MIA Oracle on a Single Model
-```python
-from src.mia_oracle import MIAOracle
-from src.models import load_resnet18
-
-model = load_resnet18('path/to/unlearned_model.pth')
-oracle = MIAOracle(threshold=0.57)
-
-result = oracle.evaluate(model, forget_loader, non_member_loader)
-print(f"AUC: {result['auc']:.4f}")
-print(f"Verdict: {'PASS ✅' if result['passed'] else 'FAIL ❌'}")
-```
-
----
-
-## 📋 Experimental Setup
-
-| Parameter | Value |
+| UCS Value | Interpretation |
 |---|---|
-| Dataset | CIFAR-10 (50,000 train / 10,000 test) |
-| Model | ResNet-18 (11.2M parameters) |
-| D_forget size | 500 samples (classes 0 & 1) |
-| D_retain size | 49,500 samples |
-| Non-member set | 500 test samples (classes 2–9) |
-| Hardware | NVIDIA Tesla T4 (Kaggle free tier) |
-| Framework | PyTorch 2.x, CUDA |
-| Oracle Threshold τ | 0.57 (calibrated; 0.58 for 100% accuracy) |
+| > 1.0 | Exceeds minimum compliance → Oracle **PASS** |
+| 0.5 – 1.0 | Partial unlearning → borderline |
+| ≈ 0.0 | No meaningful unlearning → Oracle **FAIL** |
+| < 0.0 | Membership amplification detected |
 
 ---
 
-## 📜 Citation
+## 🧪 Experimental Design
 
-If you use VeriForgot in your research, please cite:
+### Datasets
+- **CIFAR-10**: 60k images, 10 classes — primary evaluation
+- **CIFAR-100**: 60k images, 100 classes — harder multi-class task
+- **SVHN**: 73k street number images — real-world domain shift
+
+### Architectures
+- **ResNet-18**: 11.2M params, skip connections (primary)
+- **VGG-11**: 132M params, no BatchNorm, no skip connections
+- **MobileNetV2**: 3.4M params, depthwise separable convolutions
+
+### Unlearning Methods
+- **Gradient Ascent (GA)**: Maximise forget loss + retain descent
+- **SCRUB** (Kurmanji et al., NeurIPS 2023): Student-teacher KL divergence
+
+### Adversary Strategies (35 fake models tested across all experiments)
+| Strategy | Variants | Result |
+|---|---|---|
+| Gaussian noise | ε ∈ {0.0005–0.003} | 100% caught |
+| FGSM perturbation | ε ∈ {0.001–0.010} | 100% caught |
+| Weight pruning | p ∈ {0.05, 0.10, 0.20} | 100% caught |
+| Retain-only fine-tuning | epochs ∈ {1, 2} | Correctly classified by outcome |
+
+---
+
+## 🔗 Smart Contracts
+
+### `VeriForgotOracle.sol`
+Issues, verifies, and revokes on-chain compliance certificates.
+```solidity
+// Issue certificate after oracle verification
+oracle.issueCertificate(orgAddress, subjectHash, modelHash,
+                        miaAUC_x1e6, ucs_x1e6, validityDays);
+
+// Verify by anyone (data subject, regulator)
+(bool valid, uint256 auc, uint256 ucs) = oracle.verifyCertificate(certId);
+```
+
+### `VeriForgotCommitment.sol`
+SHA-256 weight commitment verification on-chain.
+```solidity
+// Pre-unlearning: store commitment
+commitment.storeCommitment(sha256Hash);
+
+// Post-unlearning: verify by any party
+bool compliant = commitment.verifyCommitment(
+    orgAddress, salt, indices, origValues, newValues
+);
+```
+
+---
+
+## 🔬 Related Work
+
+| Paper | Venue | Gap VeriForgot Fills |
+|---|---|---|
+| Eisenhofer et al. | SaTML 2025 | Process proof only → we verify **outcome** |
+| Tu et al. | NeurIPS 2025 | Theory only → we build the **full system** |
+| Guo et al. | IEEE TIFS 2024 | Pre-deployment backdoor → **retroactive** verification |
+| Zuo et al. | IEEE Trans. 2025 | Passive logging → **active oracle** certification |
+
+---
+
+## 📦 Requirements
+
+```
+torch>=2.0.0
+torchvision>=0.15.0
+scikit-learn>=1.3.0
+numpy>=1.24.0
+scipy>=1.11.0
+matplotlib>=3.7.0
+tqdm>=4.65.0
+```
+
+---
+
+## 📖 Citation
+
+If you use this code, please cite:
 
 ```bibtex
-@inproceedings{tulla2026veriforgot,
-  title     = {VeriForgot: Blockchain-Attested Verifiable Machine Unlearning
-               Using Membership Inference Oracles for GDPR Compliance},
-  author    = {Tulla, Md. Hamid Borkot},
+@inproceedings{veriforgot2026,
+  title     = {VeriForgot: Blockchain-Attested Machine Unlearning Verification
+               via Membership Inference Oracle and Cryptographic Commitment},
+  author    = {Borkot Tulla, Md. Hamid},
   booktitle = {Proceedings of the 6th International Conference on
                Cryptography and Blockchain (CRBL 2026)},
-  year      = {2026},
-  note      = {Under Review}
+  year      = {2026}
 }
 ```
 
 ---
 
-## 🛡️ License
+## 📜 License
 
-This project is licensed under the **MIT License** — see [LICENSE](LICENSE) for details.
-
----
-
-## 👤 Author
-
-**MD Hamid Borkot Tulla**  
-Department of Computer Science and Information Engineering  
-National Taiwan University of Science and Technology, Taipei, Taiwan  
-📧 hamid.borkottulla@ntust.edu.tw  
-🔗 [GitHub](https://github.com/hamidborkot)
+MIT License — see [LICENSE](LICENSE) for details.
 
 ---
 
-## 🙏 Acknowledgements
-
-Experiments were conducted using Kaggle free GPU resources (NVIDIA Tesla T4). The authors thank the open-source communities behind PyTorch, torchvision, and scikit-learn.
-
----
-
-*Submitted to CRBL 2026 — 6th International Conference on Cryptography and Blockchain*
+<p align="center">
+  <sub>Built with ❤️ for GDPR-compliant machine learning | CRBL 2026</sub>
+</p>

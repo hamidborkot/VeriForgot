@@ -1,0 +1,24 @@
+{
+  "experiments": [
+    {
+      "dataset": "CIFAR-10", "model": "VGG-11",
+      "seeds": [
+        {"seed": 42,  "orig_auc": 0.6066, "ga_auc": 0.0242, "ucs": 5.459, "pass": true},
+        {"seed": 123, "orig_auc": 0.5981, "ga_auc": 0.0311, "ucs": 5.835, "pass": true},
+        {"seed": 999, "orig_auc": 0.6104, "ga_auc": 0.0189, "ucs": 5.274, "pass": true}
+      ],
+      "oracle_tnr_intentional": 100.0,
+      "note": "finetune(1,2) achieve genuine compliance via catastrophic forgetting"
+    },
+    {
+      "dataset": "CIFAR-10", "model": "MobileNetV2",
+      "seeds": [
+        {"seed": 42,  "orig_auc": 0.6169, "ga_auc": 0.0000, "ucs": 5.278, "pass": true},
+        {"seed": 123, "orig_auc": 0.6211, "ga_auc": 0.0000, "ucs": 5.130, "pass": true},
+        {"seed": 999, "orig_auc": 0.6279, "ga_auc": 0.0000, "ucs": 4.908, "pass": true}
+      ],
+      "oracle_tnr_intentional": 100.0,
+      "note": "fgsm(0.008) and finetune(1,2) achieve genuine compliance — oracle outcome-based"
+    }
+  ]
+}

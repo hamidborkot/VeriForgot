@@ -1,27 +1,8 @@
-# Core ML
 torch>=2.0.0
 torchvision>=0.15.0
-numpy>=1.24.0
 scikit-learn>=1.3.0
-
-# Data & Visualization
+numpy>=1.24.0
+scipy>=1.11.0
 matplotlib>=3.7.0
-pandas>=2.0.0
-seaborn>=0.12.0
-Pillow>=10.0.0
-
-# Notebook
-jupyter>=1.0.0
-ipykernel>=6.0.0
-
-# Utilities
 tqdm>=4.65.0
-pyyaml>=6.0
-pickle5>=0.0.11
-
-# Blockchain (for smart contract interface prototype)
-web3>=6.0.0
-
-# ZK Proof (optional — for full ZK circuit)
-# py_ecc>=6.0.0       # BN128 curve operations
-# snarkjs integration via subprocess
+plotly>=5.15.0

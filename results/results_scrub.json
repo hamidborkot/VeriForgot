@@ -1,0 +1,19 @@
+{
+  "experiment": "GA vs SCRUB — CIFAR-10 / ResNet-18",
+  "pass_threshold": 0.57,
+  "ga": [
+    {"seed": 42,  "orig_auc": 0.5829, "auc": 0.4060, "acc": 14.8, "ucs": 2.133, "pass": true},
+    {"seed": 123, "orig_auc": 0.5762, "auc": 0.4420, "acc": 10.0, "ucs": 1.761, "pass": true},
+    {"seed": 999, "orig_auc": 0.5686, "auc": 0.4430, "acc": 10.0, "ucs": 1.831, "pass": true}
+  ],
+  "scrub": [
+    {"seed": 42,  "orig_auc": 0.5829, "auc": 0.0527, "acc": 72.3, "ucs": 6.394, "pass": true},
+    {"seed": 123, "orig_auc": 0.5762, "auc": 0.0622, "acc": 72.0, "ucs": 6.746, "pass": true},
+    {"seed": 999, "orig_auc": 0.5686, "auc": 0.0494, "acc": 72.3, "ucs": 7.566, "pass": true}
+  ],
+  "summary": {
+    "ga_mean_auc": 0.4303, "ga_std": 0.0172, "ga_pass": 3,
+    "scrub_mean_auc": 0.0548, "scrub_std": 0.0054, "scrub_pass": 3,
+    "finding": "SCRUB achieves 7.8x stronger privacy removal and 6x better utility vs GA. Both oracle-certified."
+  }
+}
