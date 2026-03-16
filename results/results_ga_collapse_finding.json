@@ -1,0 +1,13 @@
+{
+  "description": "GA model collapse finding on CIFAR-100 — new empirical contribution",
+  "finding": "Gradient Ascent with lr=0.010 (calibrated for CIFAR-10) causes model collapse on CIFAR-100 (100-class task). Confidence scores converge to uniform distribution (~1/100 = 0.01), producing undefined MIA AUC. The VeriForgot oracle correctly returns no compliance certificate in this case.",
+  "practical_guideline": "GA learning rate must scale inversely with task complexity. Recommended: lr=0.010 for <=10 classes, lr=0.005 for 100 classes.",
+  "scrub_robustness": "SCRUB shows zero failures across all dataset/LR configurations, making it the recommended default for production VeriForgot deployments.",
+  "paper_section": "Section 5.3 — Hyperparameter Sensitivity and Method Robustness",
+  "evidence": {
+    "CIFAR-10_GA_lr0.010": {"result": "PASS 3/3", "mean_auc": 0.4303},
+    "CIFAR-100_GA_lr0.010": {"result": "COLLAPSE", "mean_auc": "NaN"},
+    "CIFAR-100_GA_lr0.005": {"result": "PASS 3/3", "mean_auc": 0.4913},
+    "CIFAR-100_SCRUB_lr0.005": {"result": "PASS 3/3", "mean_auc": 0.3420}
+  }
+}

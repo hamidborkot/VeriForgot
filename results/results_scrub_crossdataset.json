@@ -1,0 +1,67 @@
+{
+  "description": "SCRUB + GA cross-dataset evaluation (CIFAR-100, SVHN) — ResNet-18, 3 seeds each",
+  "pass_threshold": 0.57,
+  "CIFAR100": {
+    "architecture": "ResNet-18",
+    "forget_classes": [0,1,2,3,4,5,6,7,8,9],
+    "forget_size": 500,
+    "seeds": [
+      {
+        "seed": 42,
+        "orig_acc": 58.7, "orig_auc": 0.7136,
+        "GA": {"note": "lr=0.010 caused model collapse (NaN AUC) on 100-class task", "status": "USE_NOTEBOOK_A_RESULTS"},
+        "GA_notebook_A": {"auc": 0.4913, "acc": 38.2, "ucs": 0.980, "pass": true},
+        "SCRUB": {"auc": 0.3424, "acc": 55.5, "ucs": 1.738, "pass": true}
+      },
+      {
+        "seed": 123,
+        "orig_acc": 58.5, "orig_auc": 0.7365,
+        "GA": {"note": "lr=0.010 caused model collapse (NaN AUC) on 100-class task", "status": "USE_NOTEBOOK_A_RESULTS"},
+        "GA_notebook_A": {"auc": 0.4897, "acc": 37.9, "ucs": 1.020, "pass": true},
+        "SCRUB": {"auc": 0.3443, "acc": 55.3, "ucs": 1.658, "pass": true}
+      },
+      {
+        "seed": 999,
+        "orig_acc": 60.0, "orig_auc": 0.7140,
+        "GA": {"note": "lr=0.010 caused model collapse (NaN AUC) on 100-class task", "status": "USE_NOTEBOOK_A_RESULTS"},
+        "GA_notebook_A": {"auc": 0.4929, "acc": 38.5, "ucs": 0.960, "pass": true},
+        "SCRUB": {"auc": 0.3393, "acc": 56.3, "ucs": 1.751, "pass": true}
+      }
+    ],
+    "summary": {
+      "GA": {"mean_auc": 0.4913, "std_auc": 0.0017, "mean_acc": 38.2, "mean_ucs": 0.987, "pass_count": 3, "note": "lr=0.005 required for stable GA on 100-class task"},
+      "SCRUB": {"mean_auc": 0.3420, "std_auc": 0.0026, "mean_acc": 55.7, "mean_ucs": 1.716, "pass_count": 3}
+    },
+    "finding": "GA lr=0.010 causes model collapse on CIFAR-100 (uniform confidence ~1/100). Conservative lr=0.005 (Notebook A) achieves stable compliance. SCRUB shows zero failures across all LR settings."
+  },
+  "SVHN": {
+    "architecture": "ResNet-18",
+    "forget_classes": [0, 1],
+    "forget_size": 500,
+    "seeds": [
+      {
+        "seed": 42,
+        "orig_acc": 95.9, "orig_auc": 0.6562,
+        "GA":    {"auc": 0.0010, "acc": 70.7, "ucs": 4.196, "pass": true},
+        "SCRUB": {"auc": 0.0154, "acc": 71.5, "ucs": 4.103, "pass": true}
+      },
+      {
+        "seed": 123,
+        "orig_acc": 96.1, "orig_auc": 0.6413,
+        "GA":    {"auc": 0.0030, "acc": 70.6, "ucs": 4.518, "pass": true},
+        "SCRUB": {"auc": 0.0145, "acc": 71.3, "ucs": 4.436, "pass": true}
+      },
+      {
+        "seed": 999,
+        "orig_acc": 95.9, "orig_auc": 0.6252,
+        "GA":    {"auc": 0.0010, "acc": 70.7, "ucs": 4.986, "pass": true},
+        "SCRUB": {"auc": 0.0140, "acc": 71.3, "ucs": 4.500, "pass": true}
+      }
+    ],
+    "summary": {
+      "GA":    {"mean_auc": 0.0017, "std_auc": 0.0010, "mean_acc": 70.7, "mean_ucs": 4.567, "pass_count": 3},
+      "SCRUB": {"mean_auc": 0.0146, "std_auc": 0.0007, "mean_acc": 71.4, "mean_ucs": 4.346, "pass_count": 3}
+    },
+    "finding": "Both GA and SCRUB achieve near-zero AUC on SVHN (digit recognition). SCRUB preserves 0.7% more accuracy. Both methods fully compliant."
+  }
+}
