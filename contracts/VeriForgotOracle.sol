@@ -4,7 +4,6 @@ pragma solidity ^0.8.20;
 /// @title  VeriForgot Oracle — On-chain GDPR Machine Unlearning Certificate
 /// @author Md. Hamid Borkot Tulla
 /// @notice Issues, verifies, and revokes compliance certificates per GDPR Article 17
-/// @dev    Gas: issueCertificate ~68,914 | verifyCertificate ~28,400
 
 contract VeriForgotOracle {
 

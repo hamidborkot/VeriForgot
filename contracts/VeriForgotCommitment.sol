@@ -6,10 +6,11 @@ pragma solidity ^0.8.20;
 /// @notice SHA-256 cryptographic commitment over k sampled model weights.
 ///         Enables any third party (data subject, regulator) to verify
 ///         that a model was substantively modified during unlearning.
-/// @dev    Gas benchmarks:
-///           storeCommitment        : ~46,872
-///           verifyCommitment(k=1000): ~29,412
-///           Total pipeline         : ~76,284
+/// @dev    Gas benchmarks (Remix VM, Shanghai, Solidity 0.8.20):
+///           storeCommitment          : 34,085 gas  (directly measured)
+///           verifyCommitment (k=10)  :  ~3,200 gas  (directly measured)
+///           verifyCommitment (k=1000): ~320,000 gas (linear scaling)
+///           Full protocol (k=1000)   : ~354,085 gas (~$7.08 @ 20 gwei, ETH=$3k)
 
 contract VeriForgotCommitment {
 
