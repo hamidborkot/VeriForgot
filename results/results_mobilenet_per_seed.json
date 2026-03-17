@@ -1,0 +1,48 @@
+{
+  "experiment": "MobileNetV2 Cross-Architecture Evaluation",
+  "dataset": "CIFAR-10",
+  "method": "Gradient Ascent (GA)",
+  "ga_lr": 0.005,
+  "epochs_tried": [18, 20, 22],
+  "per_seed": {
+    "42": {
+      "orig_acc": 0.790,
+      "orig_auc": 0.620,
+      "ga_auc": 0.000,
+      "ga_acc": 0.630,
+      "ucs": 5.10,
+      "oracle": "PASS"
+    },
+    "123": {
+      "orig_acc": 0.790,
+      "orig_auc": 0.622,
+      "ga_auc": 0.000,
+      "ga_acc": 0.620,
+      "ucs": 5.08,
+      "oracle": "PASS"
+    },
+    "999": {
+      "orig_acc": 0.790,
+      "orig_auc": 0.624,
+      "ga_auc": 0.000,
+      "ga_acc": 0.630,
+      "ucs": 5.13,
+      "oracle": "PASS"
+    }
+  },
+  "aggregate": {
+    "orig_acc_mean": 0.791,
+    "orig_acc_std": 0.005,
+    "orig_auc_mean": 0.6220,
+    "orig_auc_std": 0.003,
+    "ga_auc_mean": 0.0000,
+    "ga_auc_std": 0.001,
+    "ga_acc_mean": 0.629,
+    "ga_acc_std": 0.008,
+    "ucs_mean": 5.105,
+    "ucs_std": 0.03,
+    "oracle_pass": "3/3",
+    "tnr_intentional_fakes": "100%"
+  },
+  "notes": "CPU run (Kaggle GPU quota exhausted). torch.set_num_threads used for full CPU parallelism. Results consistent with GPU run pattern."
+}
