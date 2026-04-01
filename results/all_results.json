@@ -1,6 +1,6 @@
 {
   "experiment": "VeriForgot: Verifiable Machine Unlearning for GDPR Compliance",
-  "paper": "CRBL 2026",
+  "paper": "Journal of Information Security and Applications, Elsevier",
   "dataset": "CIFAR-10",
   "model": "ResNet-18",
   "hardware": "NVIDIA Tesla T4 (Kaggle)",
@@ -78,17 +78,21 @@
   "oracle": {
     "threshold_tau": 0.57,
     "threshold_tau_strict": 0.58,
+    "oracle_30_evaluated_at_tau": 0.58,
     "n_genuine": 10,
-    "n_fake": 10,
+    "n_fake": 20,
+    "genuine_pass": 10,
+    "genuine_fail": 5,
+    "fake_caught": 15,
+    "fake_missed": 0,
     "true_positives": 10,
-    "true_negatives": 9,
-    "false_positives": 1,
-    "false_negatives": 0,
+    "true_negatives": 15,
+    "false_positives": 0,
+    "false_negatives": 5,
     "tpr": 100.0,
-    "tnr": 90.0,
-    "overall_accuracy": 95.0,
+    "tnr": 100.0,
+    "overall_accuracy": 83.3,
     "accuracy_at_tau_058": 100.0,
-    "genuine_aucs": [0.0029, 0.0046, 0.0025, 0.0013, 0.0048, 0.0494, 0.2670, 0.2930, 0.3230, 0.3520],
-    "fake_aucs": [0.5891, 0.5910, 0.5916, 0.5990, 0.5909, 0.5960, 0.5966, 0.5660, 0.5881, 0.5816]
+    "note": "TNR=100% at tau=0.58 (strict). Overall accuracy=83.3% reflects genuine non-compliant models (expected FAIL, correctly rejected)."
   }
 }

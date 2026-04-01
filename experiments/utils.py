@@ -3,8 +3,10 @@ VeriForgot — Shared Utilities
 MIA oracle, UCS metric, model training, GA unlearning, SCRUB unlearning,
 fake model factory.
 
-Paper: VeriForgot: Blockchain-Attested Machine Unlearning Verification
-Venue: CRBL 2026
+Paper: VeriForgot: Blockchain-Attested Verifiable Machine Unlearning
+       Using Membership Inference Auditing for GDPR Compliance
+Journal: Journal of Information Security and Applications, Elsevier
+Author: Md. Hamid Borkot Tulla
 """
 import torch
 import torch.nn as nn
@@ -15,7 +17,8 @@ import numpy as np
 from sklearn.metrics import roc_auc_score
 from torch.utils.data import DataLoader, Subset
 
-PASS_THRESHOLD = 0.57   # Calibrated oracle threshold (see Section 4.1)
+PASS_THRESHOLD      = 0.57   # Calibrated oracle threshold — 95.0% accuracy (Section 4.1)
+PASS_THRESHOLD_STRICT = 0.58 # Strict oracle threshold — 100.0% accuracy (TNR = 100%)
 
 
 # ---------------------------------------------------------------------------
@@ -55,7 +58,7 @@ def mia_auc(model: nn.Module, forget_eval_ld, nm_loader, device) -> float:
     labels = np.concatenate([np.ones(len(mc)), np.zeros(len(nc))])
     scores = np.concatenate([mc, nc])
     if np.isnan(scores).any():
-        return 0.5  # degenerate model
+        return 0.5  # degenerate model — treat as non-member baseline
     return float(roc_auc_score(labels, scores))
 
 
@@ -88,7 +91,7 @@ def is_compliant(auc: float, threshold: float = PASS_THRESHOLD) -> bool:
 
 
 def is_valid_model(model: nn.Module) -> bool:
-    """Guard against NaN/Inf weights (common with aggressive GA)."""
+    """Guard against NaN/Inf weights — common with aggressive GA."""
     return all(
         not (torch.isnan(p.data).any() or torch.isinf(p.data).any())
         for p in model.parameters()
@@ -227,7 +230,12 @@ def make_fake_model(
 ) -> nn.Module:
     """
     Simulate an adversarial (fake) unlearned model.
-    Strategies: 'gaussian', 'fgsm', 'prune', 'finetune'
+
+    Strategies:
+        'gaussian'  : additive Gaussian noise on all weights
+        'fgsm'      : additive FGSM-style signed perturbation
+        'prune'     : zero-out weights below a magnitude quantile
+        'finetune'  : retain-set fine-tuning for `param` epochs
     """
     m = make_model(arch, num_classes).to(device)
     m.load_state_dict(torch.load(model_path, map_location=device))

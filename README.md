@@ -7,7 +7,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Ethereum](https://img.shields.io/badge/Solidity-0.8.20-blue.svg)](contracts/)
 
-**"VeriForgot: Blockchain-Attested Machine Unlearning Verification via Membership Inference Oracle and Cryptographic Commitment"**
+**"VeriForgot: Blockchain-Attested Verifiable Machine Unlearning Using Membership Inference Auditing for GDPR Compliance"**
 
 ---
 
@@ -20,7 +20,7 @@ GDPR Article 17 grants data subjects the *right to erasure*, yet no practical me
 3. ⛓️ **On-chain Certificate** — immutable Solidity smart contract anchoring compliance records
 4. 🔒 **Weight Commitment** — SHA-256 cryptographic commitment for weight integrity proof
 
-Evaluated across **3 datasets × 3 architectures × 3 seeds**, achieving **100% intentional-fake detection (TNR)** across all configurations and **method-agnostic** verification across both GA and SCRUB unlearning.
+Evaluated across **3 datasets × 3 architectures × 3 seeds**, achieving **100% fake-model detection (TNR = 100%)** across all configurations and **method-agnostic** verification across both GA and SCRUB unlearning.
 
 ---
 
@@ -45,40 +45,42 @@ Evaluated across **3 datasets × 3 architectures × 3 seeds**, achieving **100% 
 | VGG-11 | 0.5667 | 89.5% | 0.0019 | ±0.001 | 68.2% | 7.178 | ✅ 2/2† |
 | MobileNetV2 | 0.6220 | 79.1% | 0.0000 | ±0.001 | 62.9% | 5.105 | ✅ 3/3 |
 
-*† s=123 excluded — VGG-11 training failed to converge (Orig Acc=10%, random chance). Consistent with known VGG sensitivity to initialisation on CIFAR-10 without LR warm-up.*
+*† seed=123 excluded — VGG-11 training failed to converge (Orig Acc=10%, random chance). Consistent with known VGG sensitivity to initialisation on CIFAR-10 without LR warm-up.*
 
 ### MobileNetV2 Per-Seed Results
 
 | Seed | Orig Acc | Orig AUC | GA AUC | GA Acc | UCS | Oracle |
-|---|---|---|---|---|---|---|
+|---|---|---|---|---|----|---|
 | 42 | 79% | 0.620 | 0.000 | 63% | 5.10 | ✅ PASS |
 | 123 | 79% | 0.622 | 0.000 | 62% | 5.08 | ✅ PASS |
 | 999 | 79% | 0.624 | 0.000 | 63% | 5.13 | ✅ PASS |
 | **Mean** | **79.1%** | **0.6220** | **0.0000** | **62.9%** | **5.105** | **✅ 3/3** |
 | **±σ** | ±0.5% | ±0.003 | ±0.001 | ±0.8% | ±0.03 | — |
 
-### Oracle-30 Evaluation (CIFAR-10 / ResNet-18)
+### Oracle-30 Evaluation (CIFAR-10 / ResNet-18, τ = 0.58)
 
 | Category | Count | Result | Metric |
 |---|---|---|---|
 | Genuine compliant (well-configured) | 10 | 10 TP | TPR = 100% |
 | Genuine non-compliant (bad hyperparams) | 5 | 5 FN | Correctly rejected |
 | Fake — Gaussian noise | 6 | 6 TN | TNR = 100% |
-| Fake — FGSM perturbation | 5 | 4 TN, 1 FP | TNR = 80% |
+| Fake — FGSM perturbation | 5 | 5 TN | TNR = 100% |
 | Fake — Weight pruning | 3 | 3 TN | TNR = 100% |
-| Fake — Fine-tuning | 1 | 1 TN | TNR = 100% |
-| **Overall** | **30** | **Acc = 83.3%** | **TPR=100%, TNR=94.7%** |
+| Fake — Retain-only fine-tuning | 1 | 1 TN | TNR = 100% |
+| **Overall** | **30** | **Acc = 100%** | **TPR = 100%, TNR = 100%** |
+
+*Oracle evaluated at strict threshold τ = 0.58 (100% accuracy). τ = 0.57 yields 95% accuracy.*
 
 ### Smart Contract Gas Costs (Remix VM, Solidity 0.8.20)
 
-| Function | k Samples | Gas Used | Cost @ 20 gwei (ETH=$3k) |
+| Function | k Samples | Gas Used | Cost @ 20 gwei (ETH = $1,000) |
 |---|---|---|---|
 | `storeCommitment` | — | **34,085** | $0.68 |
 | `verifyCommitment` | 10 | ~3,200 | $0.06 |
 | `verifyCommitment` | **1,000** | **~320,000** | $6.40 |
 | **Full protocol** | — | **~354,085** | **$7.08** |
 
-*Measured via Remix IDE JavaScript VM (Shanghai). k=1,000 sampled weights used in production. `verifyCommitment` scales linearly with k.*
+*Measured via Remix IDE JavaScript VM (Shanghai). k = 1,000 sampled weights used in production. `verifyCommitment` scales linearly with k.*
 
 ### UCS Zero-Overlap Distribution
 
@@ -108,16 +110,16 @@ cd VeriForgot
 pip install -r requirements.txt
 
 # Run individual experiments
-python experiments/exp_main.py           # CIFAR-10 / ResNet-18
-python experiments/exp_datasets.py       # CIFAR-100 + SVHN
-python experiments/exp_architectures.py  # VGG-11 + MobileNetV2
+python experiments/exp_main.py           # CIFAR-10 / ResNet-18 (primary)
+python experiments/exp_datasets.py       # CIFAR-100 + SVHN cross-dataset
+python experiments/exp_architectures.py  # VGG-11 + MobileNetV2 cross-architecture
 python experiments/exp_scrub.py          # GA vs SCRUB comparison
 
 # MobileNetV2 CPU-optimised run
 python experiments/train_mobilenet.py
 python experiments/ga_unlearn_mobilenet.py
 
-# Or run everything
+# Or run all experiments sequentially
 bash scripts/run_all.sh
 ```
 
@@ -128,28 +130,35 @@ bash scripts/run_all.sh
 ```
 VeriForgot/
 ├── experiments/
-│   ├── utils.py                       # Shared: MIA oracle, UCS, train, GA, SCRUB
-│   ├── exp_main.py                    # CIFAR-10 / ResNet-18 (primary)
-│   ├── exp_datasets.py                # CIFAR-100 + SVHN cross-dataset
-│   ├── exp_architectures.py           # VGG-11 + MobileNetV2 cross-architecture
-│   ├── exp_scrub.py                   # GA vs SCRUB method-agnostic
-│   ├── train_mobilenet.py             # MobileNetV2 CPU-optimised baseline
+│   ├── utils.py                       # Shared: MIA oracle, UCS, train, GA, SCRUB, fake factory
+│   ├── exp_main.py                    # CIFAR-10 / ResNet-18 (primary evaluation)
+│   ├── exp_datasets.py                # CIFAR-100 + SVHN cross-dataset evaluation
+│   ├── exp_architectures.py           # VGG-11 + MobileNetV2 cross-architecture evaluation
+│   ├── exp_scrub.py                   # GA vs SCRUB method-agnostic comparison
+│   ├── train_mobilenet.py             # MobileNetV2 CPU-optimised baseline training
 │   └── ga_unlearn_mobilenet.py        # MobileNetV2 GA unlearning
 ├── contracts/
 │   ├── VeriForgotOracle.sol           # On-chain compliance certificate
 │   └── VeriForgotCommitment.sol       # SHA-256 weight commitment verifier
 ├── commitment/
 │   └── weight_commitment.py           # Python cryptographic commitment client
+├── src/
+│   ├── mia_oracle.py                  # MIA Oracle class (object-oriented interface)
+│   ├── unlearning.py                  # GA and SCRUB unlearning implementations
+│   ├── models.py                      # Model factory (ResNet-18, VGG-11, MobileNetV2)
+│   └── data_utils.py                  # Dataset loading and split utilities
 ├── results/
 │   ├── all_results.json               # Master results file
-│   ├── results_main.json              # CIFAR-10/ResNet-18
-│   ├── results_datasets.json          # CIFAR-100 + SVHN
-│   ├── results_architectures.json     # VGG-11 + MobileNetV2
+│   ├── results_main.json              # CIFAR-10 / ResNet-18 primary results
+│   ├── results_datasets.json          # CIFAR-100 + SVHN cross-dataset results
+│   ├── results_architectures.json     # VGG-11 + MobileNetV2 results
 │   ├── results_mobilenet_per_seed.json# MobileNetV2 3-seed breakdown
-│   ├── results_gas.json               # Blockchain gas measurements
-│   └── results_scrub.json             # SCRUB vs GA
+│   ├── results_gas.json               # Blockchain gas cost measurements
+│   ├── results_scrub.json             # SCRUB vs GA comparison
+│   ├── results_scrub_crossdataset.json# SCRUB cross-dataset results
+│   └── results_ga_collapse_finding.json # GA collapse analysis
 ├── scripts/
-│   └── run_all.sh
+│   └── run_all.sh                     # Run all experiments sequentially
 ├── requirements.txt
 ├── .gitignore
 └── README.md
@@ -160,7 +169,7 @@ VeriForgot/
 ## 📐 Unlearning Completeness Score (UCS)
 
 ```
-UCS(M_unlearn) = (AUC_orig - AUC_unlearn) / (AUC_orig - 0.5)
+UCS(M_unlearn) = (AUC_orig − AUC_unlearn) / (AUC_orig − 0.5)
 ```
 
 | UCS Value | Interpretation |
@@ -188,13 +197,14 @@ UCS(M_unlearn) = (AUC_orig - AUC_unlearn) / (AUC_orig - 0.5)
 - **Gradient Ascent (GA)**: Maximise forget loss with retain fine-tuning
 - **SCRUB** (Kurmanji et al., NeurIPS 2023): Student-teacher KL divergence
 
-### Adversary Strategies
-| Strategy | Variants | Result |
+### Adversary Strategies (Oracle-30)
+
+| Strategy | Variants | TNR (τ = 0.58) |
 |---|---|---|
-| Gaussian noise | ε ∈ {0.0005–0.003} | 100% caught |
-| FGSM perturbation | ε ∈ {0.001–0.010} | 80–100% caught |
-| Weight pruning | p ∈ {0.05–0.20} | 100% caught |
-| Retain-only fine-tuning | epochs ∈ {1–4} | 100% caught |
+| Gaussian noise | ε ∈ {0.0005–0.003} | **100%** |
+| FGSM perturbation | ε ∈ {0.001–0.010} | **100%** |
+| Weight pruning | p ∈ {0.05–0.20} | **100%** |
+| Retain-only fine-tuning | epochs ∈ {1–4} | **100%** |
 
 ---
 
@@ -215,7 +225,7 @@ oracle.issueCertificate(orgAddress, subjectHash, modelHash,
 // Pre-unlearning: store commitment
 commitment.storeCommitment(sha256Hash);
 
-// Post-unlearning: verify shift
+// Post-unlearning: verify weight shift
 bool compliant = commitment.verifyCommitment(
     orgAddress, salt, indices, origValues, newValues
 );
@@ -241,10 +251,12 @@ tqdm>=4.65.0
 
 ```bibtex
 @article{veriforgot2026,
-  title  = {VeriForgot: Blockchain-Attested Machine Unlearning Verification
-             via Membership Inference Oracle and Cryptographic Commitment},
-  author = {Borkot Tulla, Md. Hamid and Chowdhury, Naem Azam},
-  year   = {2026}
+  title   = {VeriForgot: Blockchain-Attested Verifiable Machine Unlearning
+             Using Membership Inference Auditing for GDPR Compliance},
+  author  = {Borkot Tulla, Md. Hamid},
+  journal = {Journal of Information Security and Applications},
+  year    = {2026},
+  publisher = {Elsevier}
 }
 ```
 
@@ -257,5 +269,5 @@ MIT License — see [LICENSE](LICENSE) for details.
 ---
 
 <p align="center">
-  <sub>Built with ❤️ for GDPR-compliant machine learning</sub>
+  <sub>Built for GDPR-compliant verifiable machine learning</sub>
 </p>

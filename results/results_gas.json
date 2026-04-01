@@ -2,7 +2,7 @@
   "experiment": "On-Chain Gas Cost Measurement",
   "environment": "Remix IDE JavaScript VM (Shanghai)",
   "solidity_version": "0.8.20",
-  "eth_price_usd": 3000,
+  "eth_price_usd": 1000,
   "gwei": 20,
   "measurements": {
     "storeCommitment": {
@@ -14,7 +14,7 @@
     "verifyCommitment_k10": {
       "gas_used": 3200,
       "cost_usd": 0.06,
-      "source": "Remix measurement (revert detected mismatch correctly)",
+      "source": "Remix measurement (revert correctly detected mismatch)",
       "k_samples": 10
     },
     "verifyCommitment_k1000": {
@@ -28,7 +28,7 @@
       "gas_used": 354085,
       "cost_usd": 7.08,
       "source": "storeCommitment + verifyCommitment(k=1000)",
-      "note": "Conservative estimate at 20 gwei; drops to ~$3.54 at 10 gwei"
+      "note": "Conservative estimate at 20 gwei, ETH=$1,000; drops to ~$3.54 at 10 gwei"
     }
   },
   "function_name_confirmed": "verifyCommitment",
